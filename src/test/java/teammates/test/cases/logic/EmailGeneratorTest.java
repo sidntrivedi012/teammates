@@ -330,10 +330,10 @@ public class EmailGeneratorTest extends BaseLogicTest {
 
         CourseAttributes course = new CourseAttributes("idOfTypicalCourse1", "Course Name", "UTC");
 
-        StudentAttributes student = new StudentAttributes();
-        student.name = "Student Name";
-        student.key = "skxxxxxxxxxks";
-        student.email = "student@email.tmt";
+        StudentAttributes student = StudentAttributes
+                .builder("", "Student Name", "student@email.tmt")
+                .withKey("skxxxxxxxxxks")
+                .build();
 
         EmailWrapper email = new EmailGenerator().generateStudentCourseJoinEmail(course, student);
         String subject = String.format(EmailType.STUDENT_COURSE_JOIN.getSubject(), course.getName(), course.getId());
@@ -394,27 +394,24 @@ public class EmailGeneratorTest extends BaseLogicTest {
         ______TS("student course register email");
 
         CourseAttributes course = new CourseAttributes("idOfTypicalCourse1", "Course Name", "UTC");
-        AccountAttributes user = new AccountAttributes();
-        user.email = "user@email.tmt";
-        user.name = "User Name";
-        user.googleId = "user.googleid";
-        user.isInstructor = false;
+        String name = "User Name";
+        String emailAddress = "user@email.tmt";
+        String googleId = "user.googleid";
 
-        EmailWrapper email = new EmailGenerator().generateUserCourseRegisterEmail(user, course);
+        EmailWrapper email =
+                new EmailGenerator().generateUserCourseRegisteredEmail(name, emailAddress, googleId, false, course);
         String subject = String.format(EmailType.USER_COURSE_REGISTER.getSubject(),
                 course.getName(), course.getId());
 
-        verifyEmail(email, user.email, subject, "/studentCourseRegisterEmail.html");
+        verifyEmail(email, emailAddress, subject, "/studentCourseRegisterEmail.html");
 
         ______TS("instructor course register email");
 
-        user.isInstructor = true;
-
-        email = new EmailGenerator().generateUserCourseRegisterEmail(user, course);
+        email = new EmailGenerator().generateUserCourseRegisteredEmail(name, emailAddress, googleId, true, course);
         subject = String.format(EmailType.USER_COURSE_REGISTER.getSubject(),
                 course.getName(), course.getId());
 
-        verifyEmail(email, user.email, subject, "/instructorCourseRegisterEmail.html");
+        verifyEmail(email, emailAddress, subject, "/instructorCourseRegisterEmail.html");
 
     }
 
